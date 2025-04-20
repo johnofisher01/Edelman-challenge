@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-
     const cachedArticles = await getCache("articles");
     if (cachedArticles) {
       return res.json({ source: "cache", data: cachedArticles });
@@ -13,7 +12,7 @@ router.get("/", async (req, res) => {
 
     const articles = await Article.findAll();
 
-    await setCache("articles", articles, 3600); 
+    await setCache("articles", articles, 3600);
 
     res.json({ source: "database", data: articles });
   } catch (error) {

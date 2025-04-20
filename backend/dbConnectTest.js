@@ -1,4 +1,6 @@
+require("dotenv").config(); // Load environment variables
 const { Sequelize } = require("sequelize");
+
 
 const sequelize = new Sequelize(
   process.env.DB_NAME, 
@@ -18,4 +20,14 @@ const sequelize = new Sequelize(
   }
 );
 
-module.exports = sequelize;
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection to the database was successful!");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error.message);
+  } finally {
+    await sequelize.close();
+    console.log("Database connection closed.");
+  }
+})();

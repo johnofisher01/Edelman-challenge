@@ -1,22 +1,28 @@
+require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const articlesRoutes = require("./routes/articles");
+const sequelize = require("./config/db");
+const articleRoutes = require("./routes/articles");
 
 const app = express();
-
-app.use(cors());
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
 
-app.use("/articles", articlesRoutes);
+app.use(express.json());
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
-});
+app.use("/articles", articleRoutes);
 
-const PORT = 5000;
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connected successfully!");
+    await sequelize.sync({ alter: true }); 
+  } catch (error) {
+    console.error("Unable to connect to the database:", error.message);
+  }
+})();
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
