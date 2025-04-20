@@ -1,8 +1,9 @@
 const Redis = require("ioredis");
 
 const redis = new Redis({
-  host: "articles-cache.xxxxxx.ng.0001.use1.cache.amazonaws.com", 
-  port: 6379, 
+  host: "master.articles-cache.lyj26u.euw2.cache.amazonaws.com", 
+  port: 6582, 
+  tls:{}
 });
 
 const setCache = async (key, value, ttl = 3600) => {
