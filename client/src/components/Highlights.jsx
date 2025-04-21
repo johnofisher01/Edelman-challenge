@@ -1,37 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { fetchHighlights } from "../services/api";
+import React from "react";
+import { Card, CardContent, Typography } from "@mui/material";
 
-const Highlights = () => {
-  const [highlights, setHighlights] = useState({
-    mostViewed: null,
-    mostShared: null,
-  });
-
-  useEffect(() => {
-    const getHighlights = async () => {
-      const data = await fetchHighlights();
-      setHighlights(data);
-    };
-    getHighlights();
-  }, []);
-
+const Highlights = ({ mostViewed, mostShared }) => {
   return (
-    <div className="my-6">
-      <h2 className="text-xl font-bold mb-4">Highlights</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {highlights.mostViewed && (
-          <div className="bg-white shadow p-4 rounded">
-            <h3 className="font-bold">Most Viewed</h3>
-            <p>{highlights.mostViewed.title}</p>
-          </div>
-        )}
-        {highlights.mostShared && (
-          <div className="bg-white shadow p-4 rounded">
-            <h3 className="font-bold">Most Shared</h3>
-            <p>{highlights.mostShared.title}</p>
-          </div>
-        )}
-      </div>
+    <div className="highlights">
+      <Card sx={{ marginBottom: 2 }}>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary">
+            Most Viewed Article
+          </Typography>
+          <Typography variant="subtitle1">{mostViewed?.title || "N/A"}</Typography>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary">
+            Most Shared Article
+          </Typography>
+          <Typography variant="subtitle1">{mostShared?.title || "N/A"}</Typography>
+        </CardContent>
+      </Card>
     </div>
   );
 };
