@@ -1,14 +1,34 @@
+const cache = new Map();
+
+const getCache = (key) => {
+  return cache.has(key) ? cache.get(key) : null;
+};
+
+const setCache = (key, value) => {
+  cache.set(key, value);
+};
+
+const clearCache = () => {
+  cache.clear();
+};
+
+module.exports = {
+  getCache,
+  setCache,
+  clearCache,
+};
+
 // const Redis = require("ioredis");
 
 // const redis = new Redis({
-//   host: "master.articles-cache.lyj26u.euw2.cache.amazonaws.com", 
-//   port: 6582, 
+//   host: "master.articles-cache.lyj26u.euw2.cache.amazonaws.com",
+//   port: 6582,
 //   tls:{}
 // });
 
 // const setCache = async (key, value, ttl = 3600) => {
 //   try {
-//     await redis.set(key, JSON.stringify(value), "EX", ttl); 
+//     await redis.set(key, JSON.stringify(value), "EX", ttl);
 //     console.log(`Cache set for key: ${key}`);
 //   } catch (error) {
 //     console.error(`Error setting cache for key: ${key}`, error);
