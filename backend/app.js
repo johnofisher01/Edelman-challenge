@@ -7,41 +7,44 @@ const Article = require("./models/articleModel");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enable CORS for frontend
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow requests from your frontend origin
-    credentials: true, // If you need to include cookies or authentication
+    origin: "http://localhost:5173", 
+    credentials: true, 
   })
 );
 
-// Middleware to parse JSON
 app.use(express.json());
 
-// Healthcheck Endpoint
 app.get("/", (req, res) => {
   res.send("Welcome to the Articles Dashboard API!");
 });
 
-// Get Paginated Articles with Filters and Sorting
 app.get("/articles", async (req, res) => {
   try {
     const { page = 1, limit = 10, author, sortBy } = req.query;
 
     const where = author ? { author } : {};
-    const order = sortBy ? [[sortBy, "DESC"]] : [];
 
+    const order = sortBy ? [[sortBy, "DESC"]] : [];
+    
+    const offset = (page - 1) * limit;
+
+   
     const { count, rows } = await Article.findAndCountAll({
       where,
       order,
-      limit: parseInt(limit),
-      offset: (page - 1) * limit,
+      limit: parseInt(limit), 
+      offset: parseInt(offset), 
     });
 
     res.json({
       success: true,
       source: "database",
       total: count,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(count / limit),
+      hasNextPage: page * limit < count,
       data: rows,
     });
   } catch (error) {
@@ -50,7 +53,6 @@ app.get("/articles", async (req, res) => {
   }
 });
 
-// Get Highlights: Most Viewed and Most Shared Articles
 app.get("/articles/highlights", async (req, res) => {
   try {
     const mostViewed = await Article.findOne({ order: [["views", "DESC"]] });
@@ -67,12 +69,11 @@ app.get("/articles/highlights", async (req, res) => {
   }
 });
 
-// Generate a Mock Summary for a Specific Article
 app.post("/articles/:id/summarize", async (req, res) => {
   try {
     const { id } = req.params;
-    const article = await Article.findByPk(id);
 
+    const article = await Article.findByPk(id);
     if (!article) {
       return res.status(404).json({ success: false, message: "Article not found" });
     }
@@ -89,18 +90,16 @@ app.post("/articles/:id/summarize", async (req, res) => {
   }
 });
 
-// Database Initialization and Sync
 (async () => {
   try {
-    await sequelize.authenticate();
+    await sequelize.authenticate(); 
     console.log("Database connected successfully!");
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true }); 
   } catch (error) {
     console.error("Unable to connect to the database:", error.message);
   }
 })();
 
-// Start the Server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
