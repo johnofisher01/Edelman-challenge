@@ -9,6 +9,7 @@ function App() {
             <div className="App">
                 <GlobalHeader/>
 
+
                 <main className="container mx-auto px-4 py-6">
                     <Routes>
                         <Route path="/"
