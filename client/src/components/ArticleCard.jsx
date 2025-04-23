@@ -1,32 +1,23 @@
 import React from "react";
-import { Card, CardContent, Typography, Button } from "@mui/material";
 
 const ArticleCard = ({ article, onSummarize }) => {
   return (
-    <Card className="article-card" sx={{ marginBottom: 2 }}>
-      <CardContent>
-        <Typography variant="h6" component="div">
-          {article.title}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Author: {article.author}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {article.content.substring(0, 100)}... {/* Show a preview of the content */}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+    <div className="bg-white shadow rounded p-4 flex flex-col justify-between">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-800">{article.title}</h3>
+        <p className="text-sm text-gray-600 mt-2">Author: {article.author}</p>
+        <p className="text-sm text-gray-600 mt-2">{article.content.slice(0, 100)}...</p>
+        <p className="text-sm text-gray-600 mt-2">
           Views: {article.views} | Shares: {article.shares}
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => onSummarize(article.id)}
-          sx={{ marginTop: 1 }}
-        >
-          Summarize
-        </Button>
-      </CardContent>
-    </Card>
+        </p>
+      </div>
+      <button
+        onClick={() => onSummarize(article.id)}
+        className="mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Summarize
+      </button>
+    </div>
   );
 };
 

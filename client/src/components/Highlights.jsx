@@ -1,25 +1,16 @@
 import React from "react";
-import { Card, CardContent, Typography } from "@mui/material";
 
 const Highlights = ({ mostViewed, mostShared }) => {
   return (
-    <div className="highlights">
-      <Card sx={{ marginBottom: 2 }}>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary">
-            Most Viewed Article
-          </Typography>
-          <Typography variant="subtitle1">{mostViewed?.title || "N/A"}</Typography>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary">
-            Most Shared Article
-          </Typography>
-          <Typography variant="subtitle1">{mostShared?.title || "N/A"}</Typography>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className="bg-white shadow rounded p-4">
+        <h2 className="text-lg font-semibold text-gray-700 mb-2">Most Viewed Article</h2>
+        <p className="text-gray-600">{mostViewed?.title || "N/A"}</p>
+      </div>
+      <div className="bg-white shadow rounded p-4">
+        <h2 className="text-lg font-semibold text-gray-700 mb-2">Most Shared Article</h2>
+        <p className="text-gray-600">{mostShared?.title || "N/A"}</p>
+      </div>
     </div>
   );
 };

@@ -15,11 +15,15 @@ const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchArticles({ page, ...filters }).then(setArticles);
+    fetchArticles({ page, ...filters })
+      .then((response) => setArticles(response.data || []))
+      .catch(() => setArticles([]));
   }, [page, filters]);
 
   useEffect(() => {
-    fetchHighlights().then(setHighlights);
+    fetchHighlights()
+      .then((response) => setHighlights(response || { mostViewed: null, mostShared: null }))
+      .catch(() => setHighlights({ mostViewed: null, mostShared: null }));
   }, [filters.author]);
 
   const handleSummarize = async (articleId) => {
@@ -29,15 +33,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex">
-      <div className="w-1/4 bg-gray-200 h-screen">{/* Global Header */}</div>
-      <div className="w-3/4 p-4">
+    <div className="flex flex-col items-center bg-gray-50 min-h-screen">
+      
+      <main className="container mx-auto px-4 py-6">
         <Highlights mostViewed={highlights.mostViewed} mostShared={highlights.mostShared} />
         <FilterSortBar filters={filters} setFilters={setFilters} />
         <ArticleList articles={articles} onSummarize={handleSummarize} />
         <Pagination total={50} page={page} onPageChange={setPage} />
         <SummaryModal open={modalOpen} onClose={() => setModalOpen(false)} summary={summary} />
-      </div>
+      </main>
     </div>
   );
 };

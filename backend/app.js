@@ -1,17 +1,29 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const sequelize = require("./config/db");
 const Article = require("./models/articleModel");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enable CORS for frontend
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow requests from your frontend origin
+    credentials: true, // If you need to include cookies or authentication
+  })
+);
+
+// Middleware to parse JSON
 app.use(express.json());
 
-// Endpoints
+// Healthcheck Endpoint
 app.get("/", (req, res) => {
   res.send("Welcome to the Articles Dashboard API!");
 });
 
+// Get Paginated Articles with Filters and Sorting
 app.get("/articles", async (req, res) => {
   try {
     const { page = 1, limit = 10, author, sortBy } = req.query;
@@ -38,6 +50,7 @@ app.get("/articles", async (req, res) => {
   }
 });
 
+// Get Highlights: Most Viewed and Most Shared Articles
 app.get("/articles/highlights", async (req, res) => {
   try {
     const mostViewed = await Article.findOne({ order: [["views", "DESC"]] });
@@ -54,6 +67,7 @@ app.get("/articles/highlights", async (req, res) => {
   }
 });
 
+// Generate a Mock Summary for a Specific Article
 app.post("/articles/:id/summarize", async (req, res) => {
   try {
     const { id } = req.params;
@@ -75,6 +89,7 @@ app.post("/articles/:id/summarize", async (req, res) => {
   }
 });
 
+// Database Initialization and Sync
 (async () => {
   try {
     await sequelize.authenticate();
@@ -85,6 +100,7 @@ app.post("/articles/:id/summarize", async (req, res) => {
   }
 })();
 
+// Start the Server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
