@@ -143,7 +143,6 @@ const seedArticles = async () => {
       },
     ];
 
-    // Insert data into the database
     await Article.bulkCreate(articles);
     console.log("Database has been seeded!");
   } catch (error) {

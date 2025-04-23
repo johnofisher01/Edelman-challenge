@@ -9,12 +9,13 @@ import { fetchArticles, fetchHighlights, fetchSummary } from "../services/api";
 const Dashboard = () => {
   const [articles, setArticles] = useState([]);
   const [highlights, setHighlights] = useState({ mostViewed: null, mostShared: null });
-  const [filters, setFilters] = useState({ author: "", sort: "" });
+  const [filters, setFilters] = useState({ author: "", sort: "", sortDirection: "desc" });
   const [page, setPage] = useState(1);
   const [summary, setSummary] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    console.log("Filters changed:", filters); // Debug log
     fetchArticles({ page, ...filters })
       .then((response) => setArticles(response.data || []))
       .catch(() => setArticles([]));

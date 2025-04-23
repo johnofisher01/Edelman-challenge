@@ -6,13 +6,20 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { page = 1, limit = 10, author, sortBy } = req.query;
+    console.log("Received Query Params:", req.query); 
 
-    const validSortFields = ["views", "shares", "createdAt", "updatedAt"]; 
-    const order = validSortFields.includes(sortBy) ? [[sortBy, "DESC"]] : [["createdAt", "DESC"]]; 
+    const { page = 1, limit = 10, author, sort, sortDirection } = req.query;
 
-    const offset = (parseInt(page) - 1) * parseInt(limit); 
-    const where = author ? { author: { [Op.iLike]: `%${author}%` } } : {}; 
+    const validSortFields = ["views", "shares"];
+    const order = validSortFields.includes(sort)
+      ? [[sort, sortDirection === "asc" ? "ASC" : "DESC"]]
+      : [["createdAt", "DESC"]];
+
+    console.log("Final Order Clause:", JSON.stringify(order)); 
+
+    const where = author ? { author: { [Op.iLike]: `%${author}%` } } : {};
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await Article.findAndCountAll({
       where,
@@ -32,7 +39,6 @@ router.get("/", async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching articles:", error.message);
-
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
