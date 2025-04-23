@@ -16,26 +16,21 @@ app.use(
 
 app.use(express.json());
 
-// Log all incoming requests for debugging
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.url}`, req.query, req.body);
   next();
 });
 
-// Welcome route
 app.get("/", (req, res) => {
   res.send("Welcome to the Articles Dashboard API!");
 });
 
-// Get articles with sorting and pagination
 app.get("/articles", async (req, res) => {
   try {
     const { page = 1, limit = 10, author, sort, sortDirection } = req.query;
 
-    // Log received query parameters
     console.log("Received Query Params:", req.query);
 
-    // Validate and construct sorting logic
     const validSortFields = ["views", "shares"];
     const validSortDirections = ["asc", "desc"];
     const sortField = validSortFields.includes(sort) ? sort : "createdAt"; // Default to createdAt
@@ -44,16 +39,12 @@ app.get("/articles", async (req, res) => {
       : "DESC"; // Default to DESC
     const order = [[sortField, direction]];
 
-    // Log constructed order clause
     console.log("Final Order Clause:", JSON.stringify(order));
 
-    // Construct filtering logic
     const where = author ? { author } : {};
 
-    // Calculate pagination offsets
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
-    // Query the database
     const { count, rows } = await Article.findAndCountAll({
       where,
       order,
@@ -61,7 +52,6 @@ app.get("/articles", async (req, res) => {
       offset: parseInt(offset),
     });
 
-    // Send response
     res.json({
       success: true,
       source: "database",
@@ -77,10 +67,8 @@ app.get("/articles", async (req, res) => {
   }
 });
 
-// Get article highlights
 app.get("/articles/highlights", async (req, res) => {
   try {
-    // Fetch the most viewed and most shared articles
     const mostViewed = await Article.findOne({ order: [["views", "DESC"]] });
     const mostShared = await Article.findOne({ order: [["shares", "DESC"]] });
 
@@ -95,18 +83,15 @@ app.get("/articles/highlights", async (req, res) => {
   }
 });
 
-// Generate a mock summary for an article
 app.post("/articles/:id/summarize", async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch the article by ID
     const article = await Article.findByPk(id);
     if (!article) {
       return res.status(404).json({ success: false, message: "Article not found" });
     }
 
-    // Mock summary
     const mockSummary = `This is a mocked summary for the article titled "${article.title}" by ${article.author}.`;
 
     res.json({
@@ -119,7 +104,6 @@ app.post("/articles/:id/summarize", async (req, res) => {
   }
 });
 
-// Connect to the database and start the server
 (async () => {
   try {
     await sequelize.authenticate(); 
