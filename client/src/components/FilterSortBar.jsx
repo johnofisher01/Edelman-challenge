@@ -21,6 +21,7 @@ const FilterSortBar = ({ filters, setFilters }) => {
         onChange={handleFilterChange}
         className="w-full md:w-1/3 border rounded px-3 py-2"
       >
+        
         <option value="views">Views</option>
         <option value="shares">Shares</option>
       </select>
