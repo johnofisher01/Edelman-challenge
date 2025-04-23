@@ -15,7 +15,7 @@ const ArticleCard = ({ article, onSummarize }) => {
         onClick={() => onSummarize(article.id)}
         className="mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700"
       >
-        Summarize
+        Summarise
       </button>
     </div>
   );
