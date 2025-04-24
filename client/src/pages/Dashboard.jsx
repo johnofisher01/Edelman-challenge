@@ -1,84 +1,173 @@
-import React, { useState, useEffect } from "react";
-import Highlights from "../components/Highlights";
-import FilterSortBar from "../components/FilterSortBar";
-import ArticleList from "../components/ArticleList";
-import Pagination from "../components/Pagination";
-import SummaryModal from "../components/SummaryModal";
-import { fetchArticles, fetchHighlights, fetchSummary } from "../services/api";
+import React, { useEffect, useState } from "react";
+import * as api from "../api";
 
 const Dashboard = () => {
   const [articles, setArticles] = useState([]);
   const [highlights, setHighlights] = useState({ mostViewed: null, mostShared: null });
-  const [filters, setFilters] = useState({ author: "", sort: "", sortDirection: "desc" });
-  const [page, setPage] = useState(1);
-  const [summary, setSummary] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState("");
+  const [sort, setSort] = useState("");
+
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
-    fetchArticles({ page, ...filters })
-      .then((response) => setArticles(response.data || []))
-      .catch(() => setArticles([]));
-  }, [page, filters]);
+    const fetchArticles = async () => {
+      try {
+        const response = await api.fetchArticles({ page: currentPage, filter, sort });
+        setArticles(response);
+      } catch (error) {
+        console.error("Failed to fetch articles:", error);
+      }
+    };
+    fetchArticles();
+  }, [currentPage, filter, sort]);
 
   useEffect(() => {
-    fetchHighlights()
-      .then((response) => setHighlights(response || { mostViewed: null, mostShared: null }))
-      .catch(() => setHighlights({ mostViewed: null, mostShared: null }));
-  }, [filters.author]);
+    // Fetch highlights on component mount
+    const fetchHighlights = async () => {
+      try {
+        const response = await api.fetchHighlights();
+        setHighlights(response);
+      } catch (error) {
+        console.error("Failed to fetch highlights:", error);
+      }
+    };
+    fetchHighlights();
+  }, []);
 
-  const handleSummarize = async (articleId) => {
-    const summaryData = await fetchSummary(articleId);
-    setSummary(summaryData);
-    setModalOpen(true);
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const renderPagination = () => {
+    const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+
+    return (
+      <nav aria-label="pagination navigation" className="pagination">
+        <ul className="pagination-list">
+          <li>
+            <button
+              aria-label="Go to previous page"
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Previous
+            </button>
+          </li>
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <li key={index}>
+              <button
+                aria-label={`Go to page ${index + 1}`}
+                aria-current={currentPage === index + 1 ? "page" : null}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </button>
+            </li>
+          ))}
+          <li>
+            <button
+              aria-label="Go to next page"
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
+
+  const renderHighlights = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="highlight-card">
+          <h2>Most Viewed Article</h2>
+          {highlights.mostViewed ? (
+            <div>
+              <h3>{highlights.mostViewed.title}</h3>
+              <p>Author: {highlights.mostViewed.author}</p>
+              <p>Views: {highlights.mostViewed.views} | Shares: {highlights.mostViewed.shares}</p>
+            </div>
+          ) : (
+            <p>No article available</p>
+          )}
+        </div>
+        <div className="highlight-card">
+          <h2>Most Shared Article</h2>
+          {highlights.mostShared ? (
+            <div>
+              <h3>{highlights.mostShared.title}</h3>
+              <p>Author: {highlights.mostShared.author}</p>
+              <p>Views: {highlights.mostShared.views} | Shares: {highlights.mostShared.shares}</p>
+            </div>
+          ) : (
+            <p>No article available</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderArticles = () => {
+    if (articles.length === 0) {
+      return <p>No articles available.</p>;
+    }
+
+    return (
+      <ul>
+        {articles.map((article, index) => (
+          <li key={index}>
+            <h3>{article.title}</h3>
+            <p>Author: {article.author}</p>
+            <p>Views: {article.views} | Shares: {article.shares}</p>
+            <button onClick={() => api.fetchSummary(article.id)}>Summarise</button>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   return (
-    <div className="bg-gradient-to-br from-brandLightTeal to-brandTeal text-white min-h-screen flex flex-col items-center">
-      {/* Hero Section */}
-      <div
-        className="hero bg-cover bg-center w-full"
-        style={{
-          backgroundImage:
-            "url(//edelmancom.cachefly.net/sites/g/files/aatuss191/files/styles/global_hero_bg_original/public/2025-03/ETB2025_HealthTrust_MEDIUMBackground.png?itok=Ldl26xRL)",
-        }}
-      >
-        <div className="wrapper max-w-7xl mx-auto px-4">
-          <div className="hero-content text-center py-12">
-            <div>
-              <img
-                src="https://edelmancom.cachefly.net/sites/g/files/aatuss191/files/2025-03/ETB%20Title%202a.png"
-                alt="2025 Edelman Trust Barometer"
-                className="mx-auto"
-                loading="lazy"
-              />
-            </div>
-            <p className="mt-4 text-xl font-bold">
-              <strong>Special Report: Trust and Health</strong>
-            </p>
-            <p className="text-lg font-medium">Sign up to get the report in April</p>
-            <p className="mt-6">
-              <a
-                className="main-button bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800"
-                href="https://share.hsforms.com/1KEsxrUphTg6L7QQt_rlvMg9g8d"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                SIGN UP
-              </a>
-            </p>
-          </div>
+    <div className="dashboard-container">
+      <header>
+        <h1>Dashboard</h1>
+      </header>
+      {renderHighlights()}
+      <div className="filters">
+        <div>
+          <label htmlFor="author">Filter by Author</label>
+          <input
+            id="author"
+            type="text"
+            value={filter}
+            onChange={handleFilterChange}
+            placeholder="Enter author name"
+          />
+        </div>
+        <div>
+          <label htmlFor="sort">Sort By</label>
+          <select id="sort" value={sort} onChange={handleSortChange}>
+            <option value="" disabled>
+              Select an option
+            </option>
+            <option value="views">Views</option>
+            <option value="shares">Shares</option>
+          </select>
         </div>
       </div>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        <Highlights mostViewed={highlights.mostViewed} mostShared={highlights.mostShared} />
-        <FilterSortBar filters={filters} setFilters={setFilters} />
-        <div className="bg-white rounded-lg shadow p-6">
-          <ArticleList articles={articles} onSummarize={handleSummarize} />
-        </div>
-        <Pagination total={50} page={page} onPageChange={setPage} />
-        <SummaryModal open={modalOpen} onClose={() => setModalOpen(false)} summary={summary} />
+      <main>
+        {renderArticles()}
+        {renderPagination()}
       </main>
     </div>
   );
