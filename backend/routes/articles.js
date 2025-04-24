@@ -7,9 +7,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     console.log("Received Query Params:", req.query); // Debug log
-
     const { page = 1, limit = 10, author, sort, sortDirection } = req.query;
-
     const validSortFields = ["views", "shares"];
     const validSortDirections = ["asc", "desc"];
     const sortField = validSortFields.includes(sort) ? sort : "createdAt"; // Default to createdAt
@@ -71,7 +69,6 @@ router.post("/:id/summarize", async (req, res) => {
       return res.status(404).json({ success: false, message: "Article not found" });
     }
 
-    
     const mockSummary = `This is a mocked summary for the article titled "${article.title}" by ${article.author}.`;
 
     res.json({
