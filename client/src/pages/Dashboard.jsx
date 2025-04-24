@@ -18,24 +18,33 @@ const Dashboard = () => {
     console.log("Filters changed:", filters); // Debug log
     fetchArticles({ page, ...filters })
       .then((response) => setArticles(response.data || []))
-      .catch(() => setArticles([]));
+      .catch((error) => {
+        console.error("Error fetching articles:", error.message);
+        setArticles([]);
+      });
   }, [page, filters]);
 
   useEffect(() => {
     fetchHighlights()
       .then((response) => setHighlights(response || { mostViewed: null, mostShared: null }))
-      .catch(() => setHighlights({ mostViewed: null, mostShared: null }));
+      .catch((error) => {
+        console.error("Error fetching highlights:", error.message);
+        setHighlights({ mostViewed: null, mostShared: null });
+      });
   }, [filters.author]);
 
   const handleSummarize = async (articleId) => {
-    const summaryData = await fetchSummary(articleId);
-    setSummary(summaryData);
-    setModalOpen(true);
+    try {
+      const summaryData = await fetchSummary(articleId);
+      setSummary(summaryData);
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Error summarizing article:", error.message);
+    }
   };
 
   return (
     <div className="flex flex-col items-center bg-gray-50 min-h-screen">
-      
       <main className="container mx-auto px-4 py-6">
         <Highlights mostViewed={highlights.mostViewed} mostShared={highlights.mostShared} />
         <FilterSortBar filters={filters} setFilters={setFilters} />

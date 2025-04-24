@@ -13,7 +13,8 @@ export const fetchHighlights = async () => {
   return response.data;
 };
 
+// Update fetchSummary to use POST instead of GET
 export const fetchSummary = async (articleId) => {
-  const response = await axios.get(`${API_BASE_URL}/articles/${articleId}/summary`);
+  const response = await axios.post(`${API_BASE_URL}/articles/${articleId}/summarize`);
   return response.data.summary;
 };
