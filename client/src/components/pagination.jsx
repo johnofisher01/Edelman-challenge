@@ -7,12 +7,13 @@ const Pagination = ({ total, page, onPageChange }) => {
   };
 
   return (
-    <MuiPagination
-      count={Math.ceil(total / 10)}
-      page={page}
-      onChange={handleChange}
-      sx={{ marginTop: 2 }}
-    />
+    <div className="flex justify-center mt-4">
+      <MuiPagination
+        count={Math.ceil(total / 10)}
+        page={page}
+        onChange={handleChange}
+      />
+    </div>
   );
 };
 

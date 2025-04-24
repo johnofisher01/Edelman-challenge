@@ -1,4 +1,5 @@
 import React from "react";
+import { BsSortAlphaDown, BsSortAlphaUp } from "react-icons/bs";
 
 const FilterSortBar = ({ filters, setFilters }) => {
   const handleFilterChange = (e) => {
@@ -10,44 +11,66 @@ const FilterSortBar = ({ filters, setFilters }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-center mb-6">
-      <input
-        name="author"
-        type="text"
-        placeholder="Filter by Author"
-        value={filters.author}
-        onChange={handleFilterChange}
-        className="w-full md:w-1/3 border rounded px-3 py-2"
-      />
-      <select
-        name="sort"
-        value={filters.sort}
-        onChange={handleFilterChange}
-        className="w-full md:w-1/3 border rounded px-3 py-2"
-      >
-        <option value="views">Views</option>
-        <option value="shares">Shares</option>
-      </select>
+    <div className="bg-white shadow-md rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+      {/* Filter by Author */}
+      <div className="w-full md:w-1/3">
+        <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-1">
+          Filter by Author
+        </label>
+        <input
+          id="author"
+          name="author"
+          type="text"
+          placeholder="Enter author name"
+          value={filters.author}
+          onChange={handleFilterChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Sort Options */}
+      <div className="w-full md:w-1/3">
+        <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+          Sort By
+        </label>
+        <select
+          id="sort"
+          name="sort"
+          value={filters.sort}
+          onChange={handleFilterChange}
+          className="w-fit border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="" disabled>
+            Select an option
+          </option>
+          <option value="views">Views</option>
+          <option value="shares">Shares</option>
+        </select>
+      </div>
+
+      {/* Sort Direction */}
       {filters.sort && (
-        <div className="flex gap-2">
+        <div className="w-full md:w-1/3 flex justify-center md:justify-start gap-2">
           <button
             onClick={() => handleSortDirectionChange("asc")}
-            className={`px-4 py-2 border rounded ${
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
               filters.sortDirection === "asc"
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
+            <BsSortAlphaUp />
             Ascending
           </button>
           <button
             onClick={() => handleSortDirectionChange("desc")}
-            className={`px-4 py-2 border rounded ${
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
               filters.sortDirection === "desc"
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
+            <BsSortAlphaDown />
             Descending
           </button>
         </div>
